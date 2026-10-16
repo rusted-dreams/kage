@@ -42,7 +42,7 @@ func Type(args []string) {
 
 	for _, cmd := range args {
 		if _, ok := BuiltInCommandList[cmd]; ok {
-			fmt.Printf("%v: is a shell builtin\n", cmd)
+			fmt.Printf("%v is a shell builtin\n", cmd)
 			continue
 		}
 		
@@ -54,7 +54,7 @@ func Type(args []string) {
 			fmt.Printf("%v: not found\n", cmd)
 			continue
 		}
-		fmt.Printf("%v is %v\n", args, path)
+		fmt.Printf("%v is %v\n", cmd, path)
 	}
 
 }
