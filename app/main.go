@@ -23,6 +23,8 @@ func main() {
 
 		// process commands:
 		switch command {
+		case "exit":
+			os.Exit(0)
 		case "":
 			continue
 		default:
