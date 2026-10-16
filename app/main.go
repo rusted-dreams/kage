@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -41,7 +42,26 @@ func main() {
 		case "":
 			continue
 		default:
-			fmt.Printf("%v: command not found\n", command)
+			execCommand(command, tokens[1:])
 		}
+	}
+}
+
+// execute external executables:
+func execCommand(command string, args []string) {
+	_, err := exec.LookPath(command)
+	if err != nil {
+		fmt.Printf("%v: command not found\n", command)
+		return
+	}
+
+	cmd := exec.Command(command, args...)
+
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
 	}
 }
