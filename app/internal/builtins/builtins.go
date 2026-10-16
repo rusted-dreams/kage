@@ -13,6 +13,7 @@ func init() {
 	BuiltInCommandList["echo"] = Echo
 	BuiltInCommandList["exit"] = Exit
 	BuiltInCommandList["type"] = Type
+	BuiltInCommandList["pwd"] = Pwd
 }
 
 func IsBuiltInCommand(command string) bool {
@@ -45,7 +46,7 @@ func Type(args []string) {
 			fmt.Printf("%v is a shell builtin\n", cmd)
 			continue
 		}
-		
+
 		// check if the command is a sys executable
 		// if input is like PATH="/usr/bin:/usr/local/bin:$PATH" ./your_program.sh
 		// then recursively checks all dirs. for the executable.
