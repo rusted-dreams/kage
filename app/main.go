@@ -23,6 +23,12 @@ func main() {
 
 		// process commands:
 		switch command {
+		case "echo":
+			if(len(commandFullString)<= len(command)){
+				fmt.Println()
+				continue
+			}
+			fmt.Println(commandFullString[len(command)+1:])
 		case "exit":
 			os.Exit(0)
 		case "":
