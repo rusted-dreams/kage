@@ -14,6 +14,7 @@ func init() {
 	BuiltInCommandList["exit"] = Exit
 	BuiltInCommandList["type"] = Type
 	BuiltInCommandList["pwd"] = Pwd
+	BuiltInCommandList["cd"] = Cd
 }
 
 func IsBuiltInCommand(command string) bool {
