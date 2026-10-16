@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/rusted-dreams/kage/app/internal/builtins"
 )
 
 func main() {
@@ -22,34 +24,20 @@ func main() {
 		commandFullString = strings.TrimSpace(commandFullString)
 		tokens := strings.Split(commandFullString, " ")
 		command := tokens[0]
-
-		// process commands:
-		switch command {
-		case "exit":
-			os.Exit(0)
-		case "echo":
-			if len(commandFullString) <= len(command) {
-				fmt.Println()
-				continue
-			}
-			fmt.Println(commandFullString[len(command)+1:])
-		case "type":
-			if len(tokens) < 2 {
-				fmt.Fprintln(os.Stderr, "type: missing argument")
-				continue
-			}
-			args := tokens[1]
-			typeCommand(args)
-		case "":
-			continue
-		default:
-			execCommand(command, tokens[1:])
-		}
+		run(command, tokens[1:])
 	}
 }
 
+func run(command string, args []string) {
+	if ok := builtins.IsBuiltInCommand(command); ok {
+		builtins.RunBuiltIn(command, args)
+		return
+	}
+	execExtCommand(command, args)
+}
+
 // execute external executables:
-func execCommand(command string, args []string) {
+func execExtCommand(command string, args []string) {
 	_, err := exec.LookPath(command)
 	if err != nil {
 		fmt.Printf("%v: command not found\n", command)
@@ -58,7 +46,7 @@ func execCommand(command string, args []string) {
 
 	cmd := exec.Command(command, args...)
 
-	cmd.Stdin = os.Stdin// var builtIns = []string{"echo", "exit", "type"}
+	cmd.Stdin = os.Stdin // var builtIns = []string{"echo", "exit", "type"}
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
