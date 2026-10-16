@@ -9,11 +9,12 @@ import (
 )
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("$ ")
 
 		// read user input:
-		commandFullString, err := bufio.NewReader(os.Stdin).ReadString('\n')
+		commandFullString, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "error reading user input: %v\n", err)
 			os.Exit(1)
@@ -57,7 +58,7 @@ func execCommand(command string, args []string) {
 
 	cmd := exec.Command(command, args...)
 
-	cmd.Stdin = os.Stdin
+	cmd.Stdin = os.Stdin// var builtIns = []string{"echo", "exit", "type"}
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
