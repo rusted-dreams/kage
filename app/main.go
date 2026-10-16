@@ -23,14 +23,21 @@ func main() {
 
 		// process commands:
 		switch command {
+		case "exit":
+			os.Exit(0)
 		case "echo":
-			if(len(commandFullString)<= len(command)){
+			if len(commandFullString) <= len(command) {
 				fmt.Println()
 				continue
 			}
 			fmt.Println(commandFullString[len(command)+1:])
-		case "exit":
-			os.Exit(0)
+		case "type":
+			if len(tokens) < 2 {
+				fmt.Fprintln(os.Stderr, "type: missing argument")
+				continue
+			}
+			args := tokens[1]
+			typeCommand(args)
 		case "":
 			continue
 		default:
