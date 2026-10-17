@@ -68,6 +68,7 @@ func getInput(reader *bufio.Reader) ([]string, error) {
 
 	inSingleQuote := false
 	inDoubleQuote := false
+	isEscapeChar := false
 
 	for {
 		if inSingleQuote || inDoubleQuote {
@@ -79,6 +80,15 @@ func getInput(reader *bufio.Reader) ([]string, error) {
 		}
 
 		for _, char := range line {
+			if isEscapeChar {
+				token.WriteRune(rune(char))
+				isEscapeChar = false
+				continue
+			}
+			if char == '\\' {
+				isEscapeChar = true
+				continue
+			}
 			if char == '\'' && !inDoubleQuote {
 				inSingleQuote = !inSingleQuote
 				tokenStarted = true
