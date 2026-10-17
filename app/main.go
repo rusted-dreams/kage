@@ -67,9 +67,10 @@ func getInput(reader *bufio.Reader) ([]string, error) {
 	}
 
 	inSingleQuote := false
+	inDoubleQuote := false
 
 	for {
-		if inSingleQuote {
+		if inSingleQuote || inDoubleQuote {
 			fmt.Print("> ")
 		}
 		line, err := reader.ReadString('\n')
@@ -78,10 +79,16 @@ func getInput(reader *bufio.Reader) ([]string, error) {
 		}
 
 		for _, char := range line {
-			if char == '\'' {
+			if char == '\'' && !inDoubleQuote {
 				inSingleQuote = !inSingleQuote
 				tokenStarted = true
+			} else if char == '"' && !inSingleQuote {
+				inDoubleQuote = !inDoubleQuote
+				tokenStarted = true
 			} else if inSingleQuote {
+				token.WriteRune(rune(char))
+				tokenStarted = true
+			} else if inDoubleQuote {
 				token.WriteRune(rune(char))
 				tokenStarted = true
 			} else if char == ' ' || char == '\t' || char == '\n' {
@@ -91,8 +98,11 @@ func getInput(reader *bufio.Reader) ([]string, error) {
 				token.WriteRune(rune(char))
 			}
 		}
-		
+
 		if inSingleQuote {
+			continue
+		}
+		if inDoubleQuote {
 			continue
 		}
 
