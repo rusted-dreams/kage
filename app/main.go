@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -14,17 +15,13 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("$ ")
-
-		// read user input:
-		commandFullString, err := reader.ReadString('\n')
+		tokens, err := getInput(reader)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error reading user input: %v\n", err)
-			os.Exit(1)
+			fmt.Printf("err reading user input: %s\n", err)
 		}
-		commandFullString = strings.TrimSpace(commandFullString)
-		tokens := strings.Split(commandFullString, " ")
-		command := tokens[0]
-		run(command, tokens[1:])
+		if len(tokens) > 0 {
+			run(tokens[0], tokens[1:])
+		}
 	}
 }
 
@@ -52,5 +49,53 @@ func execExtCommand(command string, args []string) {
 
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+	}
+}
+
+func getInput(reader *bufio.Reader) ([]string, error) {
+	var tokens []string
+	var token strings.Builder
+
+	tokenStarted := false
+
+	saveToken := func() {
+		if tokenStarted {
+			tokens = append(tokens, token.String())
+			token.Reset()
+			tokenStarted = false
+		}
+	}
+
+	inSingleQuote := false
+
+	for {
+		if inSingleQuote {
+			fmt.Print("> ")
+		}
+		line, err := reader.ReadString('\n')
+		if err != nil && err != io.EOF {
+			return nil, err
+		}
+
+		for _, char := range line {
+			if char == '\'' {
+				inSingleQuote = !inSingleQuote
+				tokenStarted = true
+			} else if inSingleQuote {
+				token.WriteRune(rune(char))
+				tokenStarted = true
+			} else if char == ' ' || char == '\t' || char == '\n' {
+				saveToken()
+			} else {
+				tokenStarted = true
+				token.WriteRune(rune(char))
+			}
+		}
+		
+		if inSingleQuote {
+			continue
+		}
+
+		return tokens, nil
 	}
 }
