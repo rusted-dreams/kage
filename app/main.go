@@ -85,7 +85,7 @@ func getInput(reader *bufio.Reader) ([]string, error) {
 				isEscapeChar = false
 				continue
 			}
-			if char == '\\' {
+			if char == '\\' && !inSingleQuote {
 				isEscapeChar = true
 				continue
 			}
